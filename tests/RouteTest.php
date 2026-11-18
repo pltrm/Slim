@@ -322,6 +322,24 @@ class RouteTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(array('year' => '2010', 'month' => '05', 'day' => '13'), $route3->getParams());
     }
 
+    public function testMatchesSameRouteAgainResetsParams()
+    {
+        $route = new \Slim\Route('/archive/:year(/:month)', function () {});
+        $this->assertTrue($route->matches('/archive/2010/05'));
+        $this->assertTrue($route->matches('/archive/2011'));
+        $this->assertEquals(array('year' => '2011'), $route->getParams());
+    }
+
+    public function testMatchesSameRouteAgainDoesNotGrowParamNames()
+    {
+        $route = new \Slim\Route('/files/:dir/:path+', function () {});
+        for ($i = 0; $i < 3; $i++) {
+            $this->assertTrue($route->matches('/files/a/b/c'));
+        }
+        $this->assertAttributeEquals(array('dir', 'path'), 'paramNames', $route);
+        $this->assertEquals(array('dir' => 'a', 'path' => array('b', 'c')), $route->getParams());
+    }
+
     public function testMatchesIsCaseSensitiveByDefault()
     {
         $route = new \Slim\Route('/case/sensitive', function () {});

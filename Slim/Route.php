@@ -373,6 +373,11 @@ class Route
      */
     public function matches($resourceUri)
     {
+        //Reset params of a previous match, a route may be matched many times in one process
+        $this->params = array();
+        $this->paramNames = array();
+        $this->paramNamesPath = array();
+
         //Convert URL params into regex patterns, construct a regex for this route, init params
         $patternAsRegex = preg_replace_callback(
             '#:([\w]+)\+?#',
